@@ -1,0 +1,8 @@
+[Unit]
+Description=Обновление advisory_firm из GitHub
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bash /opt/advisory_firm/deploy/ct/advisory-update.sh

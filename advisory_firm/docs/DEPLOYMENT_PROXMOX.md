@@ -117,7 +117,25 @@ su - advisory -c "cd /opt/advisory_firm && bash deploy/run_tests.sh tests/test_d
 
 ## Обновление проекта
 
-С машины с проектом:
+На сервере включено автоматическое развёртывание ветки `main` репозитория `https://github.com/univerdvfu/ADM`.
+Таймер `advisory-update.timer` проверяет GitHub каждую минуту, выполняет fast-forward обновление `/opt/advisory_firm`
+и после изменения коммита перезапускает `advisory-service`, `advisory-airflow` и `advisory-airflow-web`.
+Данные PostgreSQL, ClickHouse и MinIO не изменяются. Локальные изменения, мешающие fast-forward, не перезаписываются:
+обновление завершается ошибкой и остаётся в журнале.
+
+```bash
+pct exec 107 -- systemctl status advisory-update.timer
+pct exec 107 -- journalctl -u advisory-update.service -n 30 --no-pager
+pct exec 107 -- git -C /opt/advisory_firm log -1 --oneline
+```
+
+Ручной запуск обновления:
+
+```bash
+pct exec 107 -- systemctl start advisory-update.service
+```
+
+Ручное обновление без Git сохраняется как запасной вариант:
 
 ```bash
 tar -czf /tmp/advisory_firm.tgz -C <папка-с-проектом> advisory_firm
