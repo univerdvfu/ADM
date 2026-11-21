@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Просмотр БД и тестов</title>
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--ink:#1e293b;--muted:#5b6b7f;--navy:#10243e;--teal:#1f7a7a;--gold:#b97d12;--line:#d5dce6;
+--ok:#17803d;--bad:#b42318;--run:#b97d12;--soft:#e9eff6;--code:#f1f4f8;--btn:#10243e;--btnink:#fff}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0e1726;--card:#16233a;--ink:#e2e8f0;--muted:#9fb0c5;--navy:#cfe0f5;
+--teal:#4fc3c3;--gold:#f0b44c;--line:#2b4263;--ok:#4ade80;--bad:#f87171;--run:#f0b44c;--soft:#1c2d47;--code:#101c30;--btn:#cfe0f5;--btnink:#0e1726}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Calibri,"Segoe UI",system-ui,sans-serif}
+header{padding:14px 20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;border-bottom:1px solid var(--line);background:var(--card)}
+h1{font:700 20px Cambria,Georgia,serif;margin:0;color:var(--navy);margin-right:auto}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border-radius:99px;background:var(--soft);font-size:13px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--muted)}.dot.ok{background:var(--ok)}.dot.bad{background:var(--bad)}
+nav{display:flex;gap:4px;padding:10px 20px 0;border-bottom:1px solid var(--line);background:var(--card)}
+nav button{border:0;background:none;padding:9px 16px;font:600 15px inherit;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent}
+nav button.on{color:var(--navy);border-color:var(--gold)}
+main{padding:16px 20px 40px;max-width:1500px;margin:0 auto}
+.panel{display:none}.panel.on{display:block}
+button.b{background:var(--btn);color:var(--btnink);border:0;border-radius:8px;padding:8px 14px;font:600 14px inherit;cursor:pointer}
+button.b.alt{background:var(--soft);color:var(--ink)}button.b:disabled{opacity:.45;cursor:default}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.cols{display:grid;gap:14px;align-items:start}
+.cols{grid-template-columns:260px minmax(0,1fr)}
+@media(max-width:700px){.cols{grid-template-columns:1fr}}
+.side{max-height:78vh;overflow:auto}
+.side h3{margin:12px 0 4px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.item{display:flex;justify-content:space-between;gap:8px;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:14px}
+.item:hover,.item.on{background:var(--soft)}.item small{color:var(--muted);font-variant-numeric:tabular-nums}
+.grid{overflow:auto;max-height:62vh;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{position:sticky;top:0;background:var(--navy);color:var(--bg);text-align:left;padding:6px 10px;white-space:nowrap}
+th small{display:block;font-weight:400;opacity:.8}
+td{padding:5px 10px;border-bottom:1px solid var(--line);white-space:nowrap;max-width:360px;overflow:hidden;text-overflow:ellipsis}
+tr:nth-child(even) td{background:var(--code)}
+pre{background:var(--code);padding:10px 12px;border-radius:8px;overflow:auto;font:12.5px/1.45 Consolas,monospace;margin:6px 0;white-space:pre-wrap;word-break:break-word}
+.bar{height:10px;border-radius:6px;background:var(--soft);overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;background:var(--teal);transition:width .3s}
+.stats{display:flex;flex-wrap:wrap;gap:14px;font-size:14px;margin:6px 0}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.run{color:var(--run)}.mut{color:var(--muted)}
+.t{display:grid;grid-template-columns:30px 1fr auto;gap:8px;align-items:center;padding:8px 10px;border-radius:8px;cursor:pointer;border:1px solid transparent}
+.t:hover{background:var(--soft)}.t.on{border-color:var(--gold);background:var(--soft)}
+.t b{font-variant-numeric:tabular-nums;color:var(--muted)}.t .nm{font-size:14px;line-height:1.3}
+.tag{font-size:11px;padding:1px 7px;border-radius:99px;background:var(--soft);color:var(--muted);margin-left:6px;white-space:nowrap}
+.blk{margin:10px 0}.blk h4{margin:0 0 2px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.sql{display:grid;grid-template-columns:90px 1fr 70px;gap:8px;font:12.5px Consolas,monospace;padding:4px 0;border-bottom:1px dashed var(--line)}
+.sql span:first-child{font-family:inherit;font-weight:600}.pg{color:#2563eb}.chd{color:var(--gold)}
+@keyframes spin{to{transform:rotate(360deg)}}.spin{display:inline-block;animation:spin 1s linear infinite}
+.empty{padding:40px 10px;text-align:center;color:var(--muted)}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.form{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:12px 0}.form label{display:grid;gap:4px;font-size:12px;color:var(--muted)}
+input,select{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:8px 10px;font:14px inherit;max-width:290px}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin:12px 0}.metric{background:var(--code);border-radius:9px;padding:10px 12px}.metric small{display:block;color:var(--muted)}.metric b{font-size:20px;color:var(--navy)}
+.notice{padding:10px 12px;border-left:3px solid var(--gold);background:var(--soft);margin:10px 0}.match{border-top:1px solid var(--line);padding:14px 0}.match h4{margin:0 0 6px}.chart{width:100%;height:190px;background:var(--code);border-radius:8px}.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.vwapbar{height:30px;background:var(--teal);border-radius:5px;min-width:2px}.vwapbar.alt{background:var(--gold)}.compare{display:grid;grid-template-columns:190px 1fr 130px;gap:8px;align-items:center;margin:8px 0}
+@media(max-width:700px){.compare{grid-template-columns:110px 1fr 90px}.chart{height:150px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Просмотр БД и тестов · данные Мосбиржи</h1>
+  <a href="docs" target="_blank" style="color:var(--navy);font-weight:600;text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:4px 10px">API · Swagger</a>
+  <span id="status"></span>
+</header>
+<nav id="nav">
+  <button data-p="data" class="on">Данные</button>
+  <button data-p="twins">Двойники</button>
+  <button data-p="butterfly">Эффект бабочки</button>
+  <button data-p="tests">Тесты</button>
+  <button data-p="load">Загрузка</button>
+</nav>
+<main>
+
+<section id="data" class="panel on">
+  <div class="cols">
+    <div class="card side" id="side"></div>
+    <div class="card" id="view"><div class="empty">Выберите таблицу слева.</div></div>
+  </div>
+</section>
+
+<section id="twins" class="panel">
+  <div class="card">
+    <h2 style="margin-top:0">Поиск двойников рыночных ситуаций</h2>
+    <p class="mut">Выберите конец участка длиной 15–30 минут. Система сравнит цену, объём и волатильность со всей накопленной минутной историей той же бумаги.</p>
+    <div class="form">
+      <label style="min-width:280px">Бумага и эталонная сессия<select id="twinSession"></select></label>
+      <label>Конец участка<input id="twinEnd" type="datetime-local"></label>
+      <label>Длина, минут<input id="twinLength" type="number" min="15" max="30" value="20" style="width:110px"></label>
+      <button class="b" id="findTwins">Найти 5 аналогов</button>
+    </div>
+    <div id="twinResult"><div class="empty">Выберите участок и запустите поиск.</div></div>
+  </div>
+</section>
+
+<section id="butterfly" class="panel">
+  <div class="card">
+    <h2 style="margin-top:0">Биржевой эффект бабочки</h2>
+    <p class="mut">Насколько небольшое число крупнейших по обороту сделок влияет на средневзвешенную цену (VWAP) и итоговый оборот.</p>
+    <div class="form">
+      <label style="min-width:280px">Бумага и сессия<select id="bfSession"></select></label>
+      <label>Начало интервала (необязательно)<input id="bfStart" type="datetime-local"></label>
+      <label>Конец интервала (необязательно)<input id="bfEnd" type="datetime-local"></label>
+      <label>Доля крупнейших, %<input id="bfPct" type="number" min="0.1" max="50" step="0.1" value="1" style="width:120px"></label>
+      <button class="b" id="calcBf">Пересчитать VWAP</button>
+    </div>
+    <div id="bfResult"><div class="empty">Выберите сессию и запустите расчёт.</div></div>
+  </div>
+</section>
+
+<section id="tests" class="panel">
+  <div class="card">
+    <div class="toolbar">
+      <button class="b" id="runDb">▶ Запустить все 15 тестов БД</button>
+      <button class="b alt" id="stop" disabled>■ Остановить</button>
+      <span class="mut" id="scopeNote"></span>
+    </div>
+    <div class="bar"><i id="prog" style="width:0"></i></div>
+    <div class="stats" id="stats"></div>
+  </div>
+  <div class="cols" style="margin-top:14px">
+    <div class="card" id="tlist"></div>
+    <div>
+      <div class="card" id="tdetail"><div class="empty">Выберите тест слева.</div></div>
+      <div class="card" style="margin-top:14px">
+        <h4 style="margin:0;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">Вывод pytest</h4>
+        <pre id="log" style="max-height:260px">Тесты ещё не запускались.</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="load" class="panel">
+  <div class="card">
+    <p style="margin-top:0">Наполняет базы данными Мосбиржи: сырьё попадает в MinIO, справочники в PostgreSQL, бары в ClickHouse. Затем можно смотреть таблицы во вкладке «Данные».</p>
+    <div class="toolbar">
+      <button class="b" id="seed">Загрузить данные (сохранённые ответы биржи)</button>
+      <button class="b alt" id="seedLive">Загрузить из живого API</button>
+      <label><input type="checkbox" id="withDay" checked> смоделировать торговый день: открытие, закрытие, поздние сделки</label>
+      <button class="b alt" id="reset" style="margin-left:auto">Очистить базы</button>
+    </div>
+    <pre id="jobLog" style="min-height:140px">Загрузка не запускалась.</pre>
+  </div>
+</section>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const api = async (u, body) => { const r = await fetch(u, body ? {method:"POST", body: JSON.stringify(body)} : {}); const j = await r.json(); if (!r.ok) throw new Error(j.error || r.status); return j; };
+const fmt = n => Number(n).toLocaleString("ru-RU");
+
+// вкладки
+document.querySelectorAll("#nav button").forEach(b => b.onclick = () => {
+  document.querySelectorAll("#nav button").forEach(x => x.classList.toggle("on", x === b));
+  document.querySelectorAll(".panel").forEach(p => p.classList.toggle("on", p.id === b.dataset.p));
+  if (b.dataset.p === "data") loadSide();
+  if (b.dataset.p === "twins" || b.dataset.p === "butterfly") loadMarketSessions();
+});
+
+// статус
+async function loadStatus() {
+  try {
+    const s = await api("api/status");
+    $("#status").innerHTML = Object.entries(s).map(([k, v]) => `<span class="chip" title="${esc(v.info)}"><i class="dot ${v.ok ? "ok" : "bad"}"></i>${k}</span>`).join(" ");
+  } catch (e) { $("#status").textContent = "нет связи с сервисом"; }
+}
+
+// ---------- данные ----------
+let cur = null;
+async function loadSide() {
+  const [t, m] = await Promise.all([api("api/tables"), api("api/minio")]);
+  const total = [...t.pg, ...t.ch].reduce((a, x) => a + x.rows, 0);
+  const grp = (title, db, list) => `<h3>${title}</h3>` + list.map(x => `<div class="item ${cur && cur.db === db && cur.name === x.name ? "on" : ""}" data-db="${db}" data-name="${esc(x.name)}"><span>${esc(x.name)}</span><small>${fmt(x.rows)}</small></div>`).join("");
+  $("#side").innerHTML = grp("PostgreSQL", "pg", t.pg) + grp("ClickHouse", "ch", t.ch) +
+    `<h3>MinIO · raw-market</h3>` + (m.length ? m.map(o => `<div class="item" data-db="s3" data-name="${esc(o.key)}"><span>${esc(o.key.split("/").pop())}</span><small>${fmt(o.size)} Б</small></div>`).join("") : `<div class="mut" style="padding:6px 10px">пусто</div>`);
+  document.querySelectorAll("#side .item").forEach(el => el.onclick = () => openTable(el.dataset.db, el.dataset.name, 0));
+  if (total === 0 && !cur) $("#view").innerHTML = `<div class="empty">Таблицы пока пусты. Откройте вкладку «Загрузка» и загрузите данные Мосбиржи.</div>`;
+}
+async function openTable(db, name, offset) {
+  cur = {db, name, offset};
+  document.querySelectorAll("#side .item").forEach(el => el.classList.toggle("on", el.dataset.db === db && el.dataset.name === name));
+  if (db === "s3") {
+    const r = await api("api/minio/object?key=" + encodeURIComponent(name));
+    $("#view").innerHTML = `<h3 style="margin-top:0">${esc(name)}</h3><div class="mut">Первые 4000 байт сырого ответа API</div><pre>${esc(r.text)}</pre>`;
+    return;
+  }
+  const d = await api(`/api/table?db=${db}&name=${encodeURIComponent(name)}&limit=30&offset=${offset}`);
+  const head = d.columns.map(c => `<th>${esc(c.name)}<small>${esc(c.type)}</small></th>`).join("");
+  const rows = d.rows.map(r => "<tr>" + r.map(v => `<td title="${esc(v)}">${v === null ? '<span class="mut">NULL</span>' : esc(v)}</td>`).join("") + "</tr>").join("");
+  const to = Math.min(d.offset + d.limit, d.total);
+  $("#view").innerHTML = `<div class="toolbar" style="margin-bottom:8px"><h3 style="margin:0">${db === "pg" ? "PostgreSQL" : "ClickHouse"} · ${esc(name)}</h3><span class="mut">${fmt(d.total)} строк, показано ${d.total ? d.offset + 1 : 0}–${to}</span>
+    <span style="margin-left:auto"><button class="b alt" id="prev" ${d.offset ? "" : "disabled"}>←</button> <button class="b alt" id="next" ${to >= d.total ? "disabled" : ""}>→</button></span></div>
+    <div class="grid"><table><tr>${head}</tr>${rows || `<tr><td colspan="${d.columns.length}" class="mut">строк нет</td></tr>`}</table></div>`;
+  if (innerWidth < 700) $("#view").scrollIntoView();
+  $("#prev").onclick = () => openTable(db, name, Math.max(0, d.offset - d.limit));
+  $("#next").onclick = () => openTable(db, name, d.offset + d.limit);
+}
+
+// ---------- тесты ----------
+let tests = [], run = null, sel = null, scope = "db", timer = null;
+const ICON = {pending: "○", running: "◐", passed: "✔", failed: "✖", error: "✖", skipped: "–"};
+const CLS = {pending: "mut", running: "run", passed: "ok", failed: "bad", error: "bad", skipped: "mut"};
+async function loadTests(sc) {
+  scope = sc; tests = await api("api/tests?scope=" + sc);
+  sel = tests[0]?.id; renderTests(); renderDetail();
+  $("#scopeNote").textContent = "Сложные задачи БД: PostgreSQL, ClickHouse, сверка между ними";
+}
+function st(id) { return run?.tests?.[id]?.status || "pending"; }
+function renderTests() {
+  $("#tlist").innerHTML = tests.map(t => { const s = st(t.id), d = run?.tests?.[t.id]?.duration;
+    return `<div class="t ${t.id === sel ? "on" : ""}" data-id="${esc(t.id)}"><b>${esc(t.num || "")}</b><div class="nm">${esc(t.title)}${t.db ? `<span class="tag">${esc(t.db)}</span>` : (t.file ? `<span class="tag">${esc(t.file)}</span>` : "")}</div><span class="${CLS[s]}">${s === "running" ? '<span class="spin">◐</span>' : ICON[s]} ${d != null ? d + " с" : ""}</span></div>`; }).join("");
+  document.querySelectorAll("#tlist .t").forEach(el => el.onclick = () => { sel = el.dataset.id; renderTests(); renderDetail(); });
+}
+function renderDetail() {
+  const t = tests.find(x => x.id === sel); if (!t) return;
+  const r = run?.tests?.[sel], s = st(sel);
+  const sqls = (r?.sql || []).map(q => `<div class="sql"><span class="${q.db === "PostgreSQL" ? "pg" : "chd"}">${q.db === "PostgreSQL" ? "PG" : "CH"}</span><span>${esc(q.sql)}</span><span class="mut">${q.ms} мс${q.rows != null ? " · " + q.rows : ""}</span></div>`).join("");
+  $("#tdetail").innerHTML = `<h3 style="margin:0 0 4px">${esc(t.num ? t.num + ". " : "")}${esc(t.title)} <span class="${CLS[s]}">${ICON[s]} ${{pending: "ожидает", running: "выполняется", passed: "пройден", failed: "упал", error: "ошибка", skipped: "пропущен"}[s]}${r?.duration != null ? " · " + r.duration + " с" : ""}</span></h3>
+    ${t.essence ? `<div class="blk"><h4>Суть</h4>${esc(t.essence)}</div><div class="blk"><h4>Как проверяем</h4>${esc(t.how)}</div><div class="blk"><h4>Ожидаемый результат</h4>${esc(t.expected)}</div>` : ""}
+    <div class="blk"><h4>Ход теста: запросы к БД${r ? " (" + r.sql.length + ")" : ""}</h4>${sqls || `<span class="mut">${s === "pending" ? "Запустите тест, и здесь появятся запросы." : "Запросов не зафиксировано."}</span>`}</div>
+    ${r?.error ? `<div class="blk"><h4>Ошибка</h4><pre class="bad">${esc(r.error)}</pre></div>` : ""}
+    ${t.code ? `<details class="blk"><summary class="mut">Код теста</summary><pre>${esc(t.code)}</pre></details>` : ""}`;
+}
+function renderRun() {
+  if (!run) return;
+  const vals = Object.values(run.tests), n = (k) => vals.filter(v => v.status === k).length;
+  const total = tests.length || vals.length, done = n("passed") + n("failed") + n("error") + n("skipped");
+  $("#prog").style.width = (total ? done / total * 100 : 0) + "%";
+  $("#stats").innerHTML = `<span class="ok">✔ пройдено: ${n("passed")}</span><span class="bad">✖ упало: ${n("failed") + n("error")}</span><span class="run">◐ идёт: ${n("running")}</span><span class="mut">всего: ${total}</span><span class="mut">${run.elapsed} с</span>` +
+    (run.status === "done" ? `<b class="${run.rc === 0 ? "ok" : "bad"}">${run.rc === 0 ? "Все тесты пройдены" : "Есть падения"}</b>` : "");
+  const log = $("#log"), stick = log.scrollTop + log.clientHeight >= log.scrollHeight - 30;
+  log.textContent = run.lines.join("\n") || "Запуск…";
+  if (stick) log.scrollTop = log.scrollHeight;
+  renderTests(); renderDetail();
+}
+async function startRun(body) {
+  const sc = "db";
+  if (sc !== scope || !tests.length) await loadTests(sc);
+  run = null; ["runDb"].forEach(i => $("#" + i).disabled = true); $("#stop").disabled = false;
+  const {id} = await api("api/run", body);
+  clearInterval(timer);
+  timer = setInterval(async () => {
+    run = await api("api/run/" + id); renderRun();
+    if (run.status === "done") { clearInterval(timer); ["runDb"].forEach(i => $("#" + i).disabled = false); $("#stop").disabled = true; }
+  }, 700);
+  $("#stop").onclick = () => api(`/api/run/${id}/stop`, {});
+}
+$("#runDb").onclick = () => startRun({});
+
+// ---------- рыночная аналитика ----------
+let marketSessions = null;
+const dtValue = s => String(s).replace(" ", "T").slice(0, 16);
+const pct = (v, digits=2) => v == null ? "—" : (Number(v) * 100).toLocaleString("ru-RU", {maximumFractionDigits:digits}) + "%";
+const money = v => Number(v).toLocaleString("ru-RU", {maximumFractionDigits:4});
+const metric = (name, value) => `<div class="metric"><small>${name}</small><b>${value}</b></div>`;
+function sessionChoice(id) {
+  const [ticker_id, session_id] = $(id).value.split("|");
+  return {ticker_id, session_id};
+}
+function fillSessions(id, rows, preferredDemo) {
+  const select = $(id);
+  select.innerHTML = rows.map(s => `<option value="${s.ticker_id}|${s.session_id}">${esc(s.ticker)} · ${esc(s.session_date)} · ${s.minutes} мин${s.session_id >= 290000000000 ? " · DEMO-SIM" : ""}</option>`).join("");
+  if (preferredDemo) {
+    const i = rows.findIndex(s => s.session_id >= 290000000000);
+    if (i >= 0) select.selectedIndex = i;
+  }
+}
+async function loadMarketSessions() {
+  if (!marketSessions) marketSessions = await api("api/market/sessions");
+  fillSessions("#twinSession", marketSessions.filter(s => s.minutes >= 15), true);
+  fillSessions("#bfSession", marketSessions.filter(s => s.trades > 0), true);
+  const s = marketSessions.find(x => String(x.session_id) === sessionChoice("#twinSession").session_id);
+  if (s) $("#twinEnd").value = dtValue(s.last_minute);
+}
+function lineChart(candles, windowLength) {
+  if (!candles?.length) return "";
+  const base = Number(candles[0].open), values = candles.map(c => Number(c.close) / base);
+  const lo = Math.min(...values), hi = Math.max(...values), span = hi - lo || 0.001;
+  const x = i => 24 + i * 752 / Math.max(1, values.length - 1), y = v => 158 - (v - lo) * 126 / span;
+  const points = values.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+  const divider = candles.length > windowLength ? `<line x1="${x(windowLength - 1)}" y1="18" x2="${x(windowLength - 1)}" y2="164" stroke="#b97d12" stroke-dasharray="5 4"/><text x="${x(windowLength - 1) + 5}" y="30" fill="currentColor" font-size="11">последующие 30 минут</text>` : "";
+  return `<svg class="chart" viewBox="0 0 800 190" preserveAspectRatio="none"><line x1="24" y1="158" x2="776" y2="158" stroke="currentColor" opacity=".2"/><polyline points="${points}" fill="none" stroke="#1f7a7a" stroke-width="2.5" vector-effect="non-scaling-stroke"/>${divider}<text x="24" y="180" fill="currentColor" font-size="11">нормированная цена: первая = 100%</text><text x="760" y="180" text-anchor="end" fill="currentColor" font-size="11">${(lo * 100).toFixed(2)}–${(hi * 100).toFixed(2)}%</text></svg>`;
+}
+async function findTwins() {
+  const p = sessionChoice("#twinSession"), out = $("#twinResult");
+  out.innerHTML = '<div class="empty">Ищем похожие окна…</div>';
+  try {
+    const query = new URLSearchParams({...p, end: $("#twinEnd").value, length: $("#twinLength").value, limit: 5});
+    const d = await api("api/market/twins?" + query);
+    const matches = d.matches.map((m, i) => `<div class="match"><h4>${i + 1}. Сессия ${m.session_id} · ${esc(m.start)} — сходство ${m.score.toFixed(1)}%</h4>
+      <div class="metrics">${metric("Доходность внутри окна", pct(m.return))}${metric("Объём к предыдущему окну", m.volume_ratio == null ? "—" : m.volume_ratio.toFixed(2) + "×")}${metric("Через 5 минут", pct(m.outcomes["5"]))}${metric("Через 15 минут", pct(m.outcomes["15"]))}${metric("Через 30 минут", pct(m.outcomes["30"]))}</div>
+      ${lineChart(m.candles, d.length)}</div>`).join("");
+    out.innerHTML = `<div class="metrics">${metric("Эталон: доходность", pct(d.target.return))}${metric("Эталон: объём", d.target.volume_ratio == null ? "—" : d.target.volume_ratio.toFixed(2) + "×")}${metric("Найдено аналогов", d.matches.length)}</div>
+      <h3>Выбранный участок</h3>${lineChart(d.target.candles, d.length)}
+      <div class="notice">${esc(d.disclaimer)}<br><small>${esc(d.method)}</small></div>
+      ${matches || '<div class="empty">Похожих непересекающихся окон пока нет. Загрузите больше истории.</div>'}`;
+  } catch (e) { out.innerHTML = `<div class="notice bad">${esc(e.message)}</div>`; }
+}
+async function calcButterfly() {
+  const p = sessionChoice("#bfSession"), out = $("#bfResult");
+  out.innerHTML = '<div class="empty">Считаем VWAP…</div>';
+  try {
+    const query = new URLSearchParams({...p, top_percent: $("#bfPct").value});
+    if ($("#bfStart").value) query.set("start", $("#bfStart").value);
+    if ($("#bfEnd").value) query.set("end", $("#bfEnd").value);
+    const d = await api("api/market/butterfly?" + query), max = Math.max(d.vwap, d.without_top_vwap || 0);
+    const rows = d.top_trades.map(t => `<tr><td>${esc(t.event_id)}</td><td>${esc(t.event_time)}</td><td>${money(t.price)}</td><td>${fmt(t.quantity)}</td><td>${money(t.turnover)}</td></tr>`).join("");
+    out.innerHTML = `<div class="metrics">${metric("Фактический VWAP", money(d.vwap))}${metric("VWAP без крупных сделок", d.without_top_vwap == null ? "—" : money(d.without_top_vwap))}${metric("Разница", d.difference == null ? "—" : money(d.difference))}${metric("Изменение VWAP", d.difference_pct == null ? "—" : d.difference_pct.toFixed(3) + "%")}${metric("Крупных сделок", `${d.top_count} из ${d.trade_count}`)}${metric("Их доля оборота", d.top_turnover_share_pct.toFixed(2) + "%")}</div>
+      <div class="compare"><span>VWAP фактический</span><div class="vwapbar" style="width:${d.vwap / max * 100}%"></div><b>${money(d.vwap)}</b><span>Без ${d.top_percent}% крупнейших</span><div class="vwapbar alt" style="width:${(d.without_top_vwap || 0) / max * 100}%"></div><b>${d.without_top_vwap == null ? "—" : money(d.without_top_vwap)}</b></div>
+      <div class="notice">${esc(d.disclaimer)}</div><h3>Крупнейшие сделки</h3><div class="grid"><table><tr><th>Событие</th><th>Время</th><th>Цена</th><th>Количество</th><th>Оборот</th></tr>${rows}</table></div>`;
+  } catch (e) { out.innerHTML = `<div class="notice bad">${esc(e.message)}</div>`; }
+}
+$("#findTwins").onclick = findTwins;
+$("#calcBf").onclick = calcButterfly;
+$("#twinSession").onchange = () => {
+  const p = sessionChoice("#twinSession"), s = marketSessions.find(x => String(x.session_id) === p.session_id);
+  if (s) $("#twinEnd").value = dtValue(s.last_minute);
+};
+
+// ---------- загрузка ----------
+async function job(url, body) {
+  const {id} = await api(url, body); const log = $("#jobLog"); log.textContent = "Запуск…";
+  const t = setInterval(async () => { const j = await api("api/job/" + id); log.textContent = j.lines.join("\n") + (j.status === "running" ? "\n…" : ""); if (j.status !== "running") { clearInterval(t); loadStatus(); cur = null; } }, 700);
+}
+$("#seed").onclick = () => job("api/seed", {live: false, day: $("#withDay").checked});
+$("#seedLive").onclick = () => job("api/seed", {live: true, day: $("#withDay").checked});
+$("#reset").onclick = () => confirm("Очистить базы service в PostgreSQL, ClickHouse и сырьё в MinIO?") && job("api/reset", {});
+
+
+loadStatus(); loadSide(); loadTests("db");
+</script>
+</body>
+</html>

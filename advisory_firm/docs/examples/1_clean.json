@@ -1,0 +1,10 @@
+[
+ {"source_id": "MOEX-ISS", "event_id": "clean-1", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T10:05:00", "price": "298.10", "quantity": 10},
+ {"source_id": "MOEX-ISS", "event_id": "clean-2", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T10:10:00", "price": "298.20", "quantity": 10},
+ {"source_id": "MOEX-ISS", "event_id": "clean-3", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T10:15:00", "price": "298.30", "quantity": 10},
+ {"source_id": "MOEX-ISS", "event_id": "clean-4", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T10:20:00", "price": "298.40", "quantity": 10},
+ {"source_id": "MOEX-ISS", "event_id": "clean-5", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T10:25:00", "price": "298.50", "quantity": 10},
+ {"source_id": "MOEX-ISS", "event_id": "clean-6", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T10:30:00", "price": "298.60", "quantity": 10},
+ {"source_id": "MOEX-ISS", "event_id": "clean-7", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T10:35:00", "price": "298.70", "quantity": 10},
+ {"source_id": "MOEX-ISS", "event_id": "clean-8", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T10:40:00", "price": "298.80", "quantity": 10}
+]

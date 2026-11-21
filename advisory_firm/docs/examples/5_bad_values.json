@@ -1,0 +1,10 @@
+[
+ {"source_id": "MOEX-ISS", "event_id": "bad-1", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T11:00:00", "price": "-5", "quantity": 10},
+ {"source_id": "MOEX-ISS", "event_id": "bad-2", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T11:01:00", "price": "0", "quantity": 10},
+ {"source_id": "MOEX-ISS", "event_id": "bad-3", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T11:02:00", "price": "abc", "quantity": 10},
+ {"source_id": "MOEX-ISS", "event_id": "bad-4", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T11:03:00", "price": "1.123456789", "quantity": 10},
+ {"source_id": "MOEX-ISS", "event_id": "bad-5", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T11:04:00", "price": "298.50", "quantity": 0},
+ {"source_id": "MOEX-ISS", "event_id": "bad-6", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T11:05:00", "price": "298.50", "quantity": 2.5},
+ {"source_id": "MOEX-ISS", "event_id": "bad-7", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T11:06:00", "price": "299.10", "quantity": 10},
+ {"source_id": "MOEX-ISS", "event_id": "bad-8", "ticker_id": 1, "session_id": 20990103, "event_time": "вчера вечером", "price": "298.50", "quantity": 10}
+]

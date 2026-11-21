@@ -1,0 +1,27 @@
+[Unit]
+Description=Airflow scheduler (DAG advisory_pipeline, будни 19:00 по Москве)
+After=advisory-postgres.service advisory-clickhouse.service advisory-minio.service
+Requires=advisory-postgres.service advisory-clickhouse.service advisory-minio.service
+
+[Service]
+Environment=XDG_RUNTIME_DIR=/home/advisory/advisory-stack/run
+User=advisory
+WorkingDirectory=/opt/advisory_firm
+EnvironmentFile=/home/advisory/advisory-stack/secrets.env
+Environment=PATH=/home/advisory/advisory-stack/venv/bin:/usr/local/bin:/usr/bin:/bin
+Environment=AIRFLOW_HOME=/home/advisory/advisory-stack/airflow
+Environment=AIRFLOW__CORE__DAGS_FOLDER=/opt/advisory_firm/dags
+Environment=AIRFLOW__CORE__LOAD_EXAMPLES=False
+Environment=AIRFLOW__CORE__DEFAULT_TIMEZONE=Europe/Moscow
+Environment=PYTHONPATH=/opt/advisory_firm
+Environment="PG_DSN=host=/home/advisory/advisory-stack/pgdata dbname=service user=postgres"
+Environment=CH_DATABASE=service
+Environment=CH_HOST=127.0.0.1
+Environment=CH_PORT=8123
+Environment=MINIO_ENDPOINT=127.0.0.1:9100
+ExecStartPre=/home/advisory/advisory-stack/venv/bin/airflow db migrate
+ExecStart=/home/advisory/advisory-stack/venv/bin/airflow scheduler
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

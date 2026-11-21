@@ -1,0 +1,7 @@
+[
+ {"source_id": "MOEX-ISS", "event_id": "ids-1", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T10:05:00", "price": "298.50", "quantity": 10},
+ {"source_id": "MOEX-ISS", "event_id": "ids-2", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T10:10:00", "price": "298.50", "quantity": 10, "user_id": 777},
+ {"source_id": "MOEX-ISS", "event_id": "ids-3", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T10:15:00", "price": "298.50", "quantity": 10, "account_id": 42},
+ {"source_id": "MOEX-ISS", "event_id": "ids-4", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T10:20:00", "price": "298.50", "quantity": 10, "broker_id": 3},
+ {"source_id": "MOEX-ISS", "event_id": "ids-5", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T10:25:00", "price": "298.50", "quantity": 10, "comment": "лишнее поле"}
+]

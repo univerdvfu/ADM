@@ -1,0 +1,13 @@
+[Unit]
+Description=MinIO (advisory)
+After=network.target
+
+[Service]
+User=advisory
+Environment=MINIO_BROWSER_REDIRECT_URL=http://10.50.16.246:9101
+EnvironmentFile=/home/advisory/advisory-stack/secrets.env
+ExecStart=/home/advisory/advisory-stack/bin/minio server /home/advisory/advisory-stack/data/minio --address 0.0.0.0:9100 --console-address 0.0.0.0:9101
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,7 @@
+[
+ {"source_id": "MOEX-ISS", "event_id": "dup-1", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T10:05:00", "price": "298.50", "quantity": 10},
+ {"source_id": "MOEX-ISS", "event_id": "dup-2", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T10:06:00", "price": "298.50", "quantity": 10},
+ {"source_id": "MOEX-ISS", "event_id": "dup-2", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T10:06:00", "price": "298.50", "quantity": 10},
+ {"source_id": "MOEX-ISS", "event_id": "dup-3", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T10:07:00", "price": "298.50", "quantity": 10},
+ {"source_id": "MOEX-ISS", "event_id": "dup-1", "ticker_id": 1, "session_id": 20990103, "event_time": "2026-10-29T10:05:00", "price": "298.50", "quantity": 10}
+]

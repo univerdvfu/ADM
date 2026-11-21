@@ -1,0 +1,23 @@
+[Unit]
+Description=Сервис просмотра БД и тестов (advisory, только 127.0.0.1:8765)
+After=advisory-postgres.service advisory-clickhouse.service advisory-minio.service
+Requires=advisory-postgres.service advisory-clickhouse.service advisory-minio.service
+
+[Service]
+Environment=XDG_RUNTIME_DIR=/home/advisory/advisory-stack/run
+User=advisory
+WorkingDirectory=/opt/advisory_firm
+EnvironmentFile=/home/advisory/advisory-stack/secrets.env
+Environment=PYTHONPATH=/opt/advisory_firm
+Environment=PG_DATA=/home/advisory/advisory-stack/pgdata
+Environment="PG_DSN=host=/home/advisory/advisory-stack/pgdata dbname=service user=postgres"
+Environment=CH_DATABASE=service
+Environment=CH_HOST=127.0.0.1
+Environment=CH_PORT=8123
+Environment=MINIO_ENDPOINT=127.0.0.1:9100
+ExecStartPre=/bin/sleep 5
+ExecStart=/home/advisory/advisory-stack/venv/bin/python /opt/advisory_firm/service/app.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

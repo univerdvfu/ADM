@@ -1,0 +1,13 @@
+[Unit]
+Description=ClickHouse (advisory)
+After=network.target
+
+[Service]
+User=advisory
+WorkingDirectory=/home/advisory/advisory-stack
+ExecStart=/home/advisory/advisory-stack/bin/clickhouse server -- --path=/home/advisory/advisory-stack/data/clickhouse --http_port=8123 --listen_host=127.0.0.1
+Restart=on-failure
+LimitNOFILE=262144
+
+[Install]
+WantedBy=multi-user.target

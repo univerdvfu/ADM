@@ -1,0 +1,13 @@
+[Unit]
+Description=PostgreSQL 16 (pgserver, advisory)
+After=network.target
+
+[Service]
+User=advisory
+Environment=PG_DATA=/home/advisory/advisory-stack/pgdata
+ExecStart=/home/advisory/advisory-stack/venv/bin/python /opt/advisory_firm/deploy/ct/pg_run.py
+Restart=on-failure
+TimeoutStopSec=60
+
+[Install]
+WantedBy=multi-user.target
